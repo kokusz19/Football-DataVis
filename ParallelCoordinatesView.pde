@@ -174,8 +174,13 @@ public class ParallelCoordinatesView extends Viewport{
       line(x, y, x + 30.0f, y); //ad-hoc
       if(!inRange[i])
         fill(200);
-      else
+      else{
         fill(0);
+        if(samples.get(i).highlighted){
+          fill(color(255, 178, 102));
+        text(" : " + classLabel /*+ " (" + i + ")"*/, x + 31f, y); ///ad-hoc
+        }
+      }
       text(" : " + classLabel /*+ " (" + i + ")"*/, x + 30.0f, y); ///ad-hoc
       y += yOffset;
     }
