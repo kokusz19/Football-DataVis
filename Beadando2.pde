@@ -103,6 +103,7 @@ void firstPanelSetup(){
 			add("Draw");
 			add("Lost");
 			add("Points");
+			add("Country");
 		}
 	};
 	ArrayList<Sample> samples = new ArrayList<Sample>();

@@ -11,13 +11,15 @@ public class ParallelCoordinatesView extends Viewport{
 
   private HashMap<String, Integer> classColors;
   private String[] classLabels;
-  
+  private boolean[] inRange;
+
   private ArrayList<Sample> samples;
 
   public ParallelCoordinatesView(ArrayList<String> labels, ArrayList<Sample> samples, float viewX, float viewY, float viewWidth, float viewHeight){
     super(viewX, viewY, viewWidth, viewHeight);
     this.labels = labels;
     this.samples = samples;
+    inRange = new boolean[samples.size()];
 //this.dumpInformation();
     this.initializeAxes();
     this.selectedAxis = null;
@@ -43,20 +45,18 @@ public class ParallelCoordinatesView extends Viewport{
   }
 
   private void initializeAxes(){
-    int numberOfFeatures = this.labels.size(); //-1 is to exclude the last element of this.labels, "class"
+    int numberOfFeatures = this.labels.size()-1; //-1 is to exclude the last element of this.labels, "class"
     float xOffset = this.getWidth() / (float)numberOfFeatures;
     float x = this.getX() + xOffset / 2.0f;
     float startY = this.getY() + this.getHeight() * 0.1f;
     float endY = startY + this.getHeight() * 0.7f;
     this.axes = new ArrayList<Axis>();
     for(int i = 0; i < numberOfFeatures; i++){
-      //println("START\t" + i + " out of " + numberOfFeatures);
       String title = this.labels.get(i);
       float max = MIN_FLOAT;
       float min = MAX_FLOAT;
       for(int j = 0; j < this.samples.size(); j++){
         Sample sample = this.samples.get(j);
-        //println("SAMPLE\t" + sample + " with number of features: " + sample.getNumberOfFeatures() + ", while i is " + i);
         float feature = sample.getFeatureAt(i);
         if(feature > max)
           max = feature;
@@ -65,7 +65,6 @@ public class ParallelCoordinatesView extends Viewport{
       }
       this.axes.add(new Axis(title, max, min, x, startY, x, endY));
       x += xOffset;
-      //println("END\t" + i + " out of " + numberOfFeatures);
     }
   }
 
@@ -100,6 +99,7 @@ public class ParallelCoordinatesView extends Viewport{
             break;
         }
         if(isInRange){
+          inRange[i] = true;
           if(this.selectedAxis == null){
             String classLabel = sample.getClassLabel();
             color lineColor = this.classColors.get(classLabel);
@@ -112,7 +112,9 @@ public class ParallelCoordinatesView extends Viewport{
             stroke(lineColor);
           }
         }else{
-          stroke(color(180, 50));
+          inRange[i] = false;
+          //println(i + " has been set to false, sample: " + samples.get(i).classLabel);
+          stroke(180, 30);
         }
       }
       for(int j = 1; j < sample.getNumberOfFeatures(); j++){
@@ -140,34 +142,41 @@ public class ParallelCoordinatesView extends Viewport{
     float x = width-650;
     float y = 60;
     float yOffset = textAscent() + textDescent();
+    boolean firstColumn = true, secondColumn = false;
     textAlign(LEFT, CENTER);
     String label = this.labels.get(this.labels.size() - 1);
     text(label, x, y);
     x += textWidth(label + " "); //ad-hoc
     strokeWeight(2.0f);
-    boolean firstColumn = true, secondColumn = false;
-    for(int i = 0; i < this.classLabels.length; i++){
-      String classLabel = this.classLabels[i];
+    for(int i = 0; i < this.samples.size(); i++){
       if(i > 33 && firstColumn){
         firstColumn = false;
         secondColumn = true;
-        x = width-400;
+        x = width-450;
+        y = 60;
+      } else if(i > 65 && secondColumn){
+        secondColumn = false;
+        x = width-250;
         y = 60;
       }
-      if(i > 66 && secondColumn){
-        secondColumn = false;
-         x = width-200;
-         y = 60;
-      }
+      String classLabel = this.samples.get(i).classLabel;
       if(this.selectedAxis == null){
         color lineColor = this.classColors.get(classLabel);
+        if(!inRange[i]){
+          String s = hex(lineColor).toString();
+          lineColor = color(unhex(s.substring(2,4)), unhex(s.substring(4,6)), unhex(s.substring(6,8)), 80);
+        }
         stroke(lineColor);
       }else{
         fill(180);
         stroke(180);
       }
       line(x, y, x + 30.0f, y); //ad-hoc
-      text(" : " + classLabel, x + 30.0f, y); ///ad-hoc
+      if(!inRange[i])
+        fill(200);
+      else
+        fill(0);
+      text(" : " + classLabel /*+ " (" + i + ")"*/, x + 30.0f, y); ///ad-hoc
       y += yOffset;
     }
   }
