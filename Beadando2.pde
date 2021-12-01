@@ -1,13 +1,25 @@
+import g4p_controls.*;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.ArrayList;
 
+// First loading in the data
 static final int PANEL_HEIGHT = 50; 
 List<Button> panel;
 int panelSelected;
 Table table;
 Recording[] records;
+
+// First Panel
+List<Country> countries;
 ParallelCoordinatesView parallelCoordinatesView;
+
+// Second panel
+GDropList dl, dl2;
+
+// Third panel
+
+// Fourth panel
 
 void setup(){
   size(1600, 800);
@@ -15,8 +27,8 @@ void setup(){
   // Create the navigation panel (last panel is always a placeholder only, without any function)
   panel = new ArrayList<Button>();
   panel.add(new Button(0, 0, 100, PANEL_HEIGHT, "Overall"));
-  panel.add(new Button(100, 0, 200, PANEL_HEIGHT));
-  panel.add(new Button(200, 0, 300, PANEL_HEIGHT));
+  panel.add(new Button(100, 0, 250, PANEL_HEIGHT, "Play X Score"));
+  panel.add(new Button(250, 0, 300, PANEL_HEIGHT));
   panel.add(new Button(300, 0, 400, PANEL_HEIGHT));
   panel.add(new Button(400, 0, width, PANEL_HEIGHT));
 
@@ -31,29 +43,32 @@ void setup(){
 
   // Get countries for first panel
   firstPanelSetup();
+  secondPanelSetup();
 }
 
 void draw(){
 	background(230);
 
+	// Rendering the data based on the selected panel
 	switch(panelSelected){
 		case 0: {
 			parallelCoordinatesView.draw();
 			break;
 		}
 		case 1: {
-			secondPanel();
+			secondPanelDraw();
 			break;
 		}
 		case 2: {
-			thirdPanel();
+			thirdPanelDraw();
 			break;
 		}
 		case 3: {
-			fourthPanel();
+			fourthPanelDraw();
 			break;
 		}
 	}
+
 	// Rendering the upper panels
 	createUpperPanel();
 	for(int i = 0; i < panel.size(); i++){
@@ -63,30 +78,7 @@ void draw(){
 }
 
 void firstPanelSetup(){
-	List<Country> countries = new ArrayList<Country>();
-
-	for(int i = 0; i < records.length; i++){
-		boolean ht = false;
-		boolean at = false;
-		for(Country country : countries){
-			if(country.name.equals(records[i].homeTeam))
-				ht = true;
-			if(country.name.equals(records[i].awayTeam))
-				at = true;
-		}
-		if(!at)
-			countries.add(new Country(records[i].awayTeam));
-		if(!ht)
-			countries.add(new Country(records[i].homeTeam));
-
-		for(Country country : countries){
-			if(country.name.equals(records[i].homeTeam))
-				country.update(records[i]);
-			if(country.name.equals(records[i].awayTeam))
-				country.update(records[i]);
-		}
-	}
-
+	countriesSetup();
 
 	ArrayList<String> labels = new ArrayList<String>() {
 		{
@@ -117,17 +109,85 @@ void firstPanelSetup(){
 	//for(int i = 0; i < countries.size(); i++)
 	//	println(countries.get(i));
 }
-void secondPanel(){
-	text("2222", 150, 150);
+void secondPanelSetup(){
+	
 }
-void thirdPanel(){
+void secondPanelDraw(){
+	String[] countryNames = new String[countries.size()+1];
+	textSize(12);
+	textAlign(LEFT);
+	
+	// Create the first dropDownList
+	text("Not selected countries", 5, 62);
+	if(dl != null){
+		if(dl.getSelectedIndex() != 0){
+			dl2.addItem(dl.getSelectedText());
+			int idx = dl.getSelectedIndex();
+			dl.setSelected(0);
+			dl.removeItem(idx);
+		}
+	} else{
+		dl = new GDropList(this, 5f, 70f, 200f, 200f);
+		countryNames[0] = "Select a country";
+		for(int i = 1; i <= countries.size(); i++){
+			countryNames[i] = countries.get(i-1).name;
+		}
+		dl.setItems(countryNames, 0);
+	}		
+	dl.draw();
+
+	// Create the second dropDownList
+	text("Selected countries", 5, 290);
+	if(dl2 != null){
+		if(dl2.getSelectedIndex() != 0){
+			dl.addItem(dl2.getSelectedText());
+			int idx = dl2.getSelectedIndex();
+			dl2.setSelected(0);
+			dl2.removeItem(idx);
+		}
+	} else{
+		dl2 = new GDropList(this, 5f, 300f, 200f, 200f);
+		String[] tmp = new String[]{ "Unselect a country" };
+		dl2.setItems(tmp, 0);
+	}		
+	dl2.draw();
+}
+void thirdPanelDraw(){
 	text("3333", 150, 150);
 }
-void fourthPanel(){
+void fourthPanelDraw(){
 	text("4444", 150, 150);
 }
 
 
+void countriesSetup(){
+	countries = new ArrayList<Country>();
+
+	for(int i = 0; i < records.length; i++){
+		boolean ht = false;
+		boolean at = false;
+		for(Country country : countries){
+			if(country.name.equals(records[i].homeTeam))
+				ht = true;
+			if(country.name.equals(records[i].awayTeam))
+				at = true;
+		}
+		if(!at)
+			countries.add(new Country(records[i].awayTeam));
+		if(!ht)
+			countries.add(new Country(records[i].homeTeam));
+
+		for(Country country : countries){
+			if(country.name.equals(records[i].homeTeam))
+				country.update(records[i]);
+			if(country.name.equals(records[i].awayTeam))
+				country.update(records[i]);
+		}
+	}
+
+	//for(Country country : countries)
+	//	println(country);
+}
 void mousePressed() {
   // Check if the mouse has been clicked inside of a panel
   for(int i = 0; i < panel.size()-1; i++)
