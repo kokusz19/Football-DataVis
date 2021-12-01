@@ -122,8 +122,11 @@ void firstPanelSetup(){
 		samples.add(new Sample(features, classLabel));
 	}
 	parallelCoordinatesView = new ParallelCoordinatesView(labels, samples, 0.0f, 100.0f, width-600, height-PANEL_HEIGHT);	
-	//for(int i = 0; i < countries.size(); i++)
-	//	println(countries.get(i));
+/*for(Country country : countries){
+		println(country);
+		println("\tPoints: " + country.pointsByYear);
+		println("\tGoals" + country.goalsByYear);
+	}*/
 }
 void secondPanelSetup(){
 	

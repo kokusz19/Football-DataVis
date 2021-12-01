@@ -356,7 +356,7 @@ Year,Date,Time,Round,Stadium,City,Country,HomeTeam,HomeGoals,AwayGoals,AwayTeam,
 1982,05.jul.82,17:15,Group_3,Sarria,Barcelona,Spain,Italy,3,2,Brazil,
 1982,05.jul.82,21:00,Group_2,Santiago_Bernabeu,Madrid,Spain,Spain,0,0,England,
 1982,08.jul.82,17:15,Semi-finals,Camp_Nou,Barcelona,Spain,Poland,0,2,Italy,
-1982,08.jul.82,21:00,Semi-finals,Ramon_Sanchez_Pizjuan,Seville,Spain,Germany_FR,3,3,France,win_on_penalties_(5_-_4)_
+1982,08.jul.82,21:00,Semi-finals,Ramon_Sanchez_Pizjuan,Seville,Spain,Germany_FR,3,3,France,Germany_FR_win_on_penalties_(5_-_4)_
 1982,10.jul.82,20:00,Match_for_third_place,Jose_Rico_Perez,Alicante,Spain,Poland,3,2,France,
 1982,11.jul.82,20:00,Final,Santiago_Bernabeu,Madrid,Spain,Italy,3,1,Germany_FR,
 1986,31.maj.86,12:00,Group_A,Estadio_Azteca,Mexico_City,Mexico,Bulgaria,1,1,Italy,
@@ -455,12 +455,12 @@ Year,Date,Time,Round,Stadium,City,Country,HomeTeam,HomeGoals,AwayGoals,AwayTeam,
 1990,25.jun.90,21:00,Round_of_16,Stadio_Olimpico,Rome,Italy,Italy,2,0,Uruguay,
 1990,26.jun.90,17:00,Round_of_16,Marc_Antonio_Bentegodi,Verona,Italy,Spain,1,2,Yugoslavia,Yugoslavia_win_after_extra_time_
 1990,26.jun.90,21:00,Round_of_16,Renato_Dall_Ara,Bologna,Italy,England,1,0,Belgium,England_win_after_extra_time_
-1990,30.jun.90,17:00,Quarter-finals,Comunale,Florence,Italy,Yugoslavia,0,0,Argentina,win_on_penalties_(2_-_3)_
+1990,30.jun.90,17:00,Quarter-finals,Comunale,Florence,Italy,Yugoslavia,0,0,Argentina,Argentina_win_on_penalties_(2_-_3)_
 1990,30.jun.90,21:00,Quarter-finals,Stadio_Olimpico,Rome,Italy,Italy,1,0,Republic_of_Ireland,
 1990,01.jul.90,17:00,Quarter-finals,Giuseppe_Meazza,Milan,Italy,Germany_FR,1,0,Czechoslovakia,
 1990,01.jul.90,21:00,Quarter-finals,San_Paolo,Naples,Italy,England,3,2,Cameroon,England_win_after_extra_time_
-1990,03.jul.90,20:00,Semi-finals,San_Paolo,Naples,Italy,Italy,1,1,Argentina,win_on_penalties_(3_-_4)_
-1990,04.jul.90,20:00,Semi-finals,Stadio_delle_Alpi,Turin,Italy,Germany_FR,1,1,England,win_on_penalties_(4_-_3)_
+1990,03.jul.90,20:00,Semi-finals,San_Paolo,Naples,Italy,Italy,1,1,Argentina,Argentina_win_on_penalties_(3_-_4)_
+1990,04.jul.90,20:00,Semi-finals,Stadio_delle_Alpi,Turin,Italy,Germany_FR,1,1,England,Germany_FR_win_on_penalties_(4_-_3)_
 1990,07.jul.90,20:00,Match_for_third_place,Stadio_San_Nicola,Bari,Italy,Italy,2,1,England,
 1990,08.jul.90,20:00,Final,Stadio_Olimpico,Rome,Italy,Germany_FR,1,0,Argentina,
 1994,17.jun.94,19:30,Group_C,Cotton_Bowl,Dallas,USA,Spain,2,2,Korea_Republic,
