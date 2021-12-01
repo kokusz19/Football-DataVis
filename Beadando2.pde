@@ -14,7 +14,7 @@ void setup(){
   
   // Create the navigation panel (last panel is always a placeholder only, without any function)
   panel = new ArrayList<Button>();
-  panel.add(new Button(0, 0, 100, PANEL_HEIGHT));
+  panel.add(new Button(0, 0, 100, PANEL_HEIGHT, "Overall"));
   panel.add(new Button(100, 0, 200, PANEL_HEIGHT));
   panel.add(new Button(200, 0, 300, PANEL_HEIGHT));
   panel.add(new Button(300, 0, 400, PANEL_HEIGHT));
@@ -55,17 +55,11 @@ void draw(){
 		}
 	}
 	// Rendering the upper panels
+	createUpperPanel();
 	for(int i = 0; i < panel.size(); i++){
-		createUpperPanel();
 		if(i != (panel.size()-1))
 			panel.get(i).update();
 	}
-
-	fill(0);
-	textSize(20);
-	textAlign(CENTER, CENTER);
-	text("Overall", 50, PANEL_HEIGHT/2);
-
 }
 
 void firstPanelSetup(){
