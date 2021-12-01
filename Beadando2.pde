@@ -52,18 +52,34 @@ void draw(){
 	// Rendering the data based on the selected panel
 	switch(panelSelected){
 		case 0: {
+			if(dl != null){
+				dl.setVisible(false);
+				dl2.setVisible(false);
+			}
 			parallelCoordinatesView.draw();
 			break;
 		}
 		case 1: {
+			if(dl != null){
+				dl.setVisible(true);
+				dl2.setVisible(true);
+			}
 			secondPanelDraw();
 			break;
 		}
 		case 2: {
+			if(dl != null){
+				dl.setVisible(false);
+				dl2.setVisible(false);
+			}
 			thirdPanelDraw();
 			break;
 		}
 		case 3: {
+			if(dl != null){
+				dl.setVisible(false);
+				dl2.setVisible(false);
+			}
 			fourthPanelDraw();
 			break;
 		}
