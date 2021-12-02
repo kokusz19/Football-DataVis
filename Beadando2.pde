@@ -7,8 +7,9 @@ import java.util.ArrayList;
 static final int PANEL_HEIGHT = 50; 
 List<Button> panel;
 int panelSelected;
-Table table;
+Table table, table2;
 Recording[] records;
+WorldCup[] worldCups;
 
 // First Panel
 List<Country> countries;
@@ -40,6 +41,15 @@ void setup(){
   	records[i] = new Recording(tr.getInt(0), tr.getString(1), tr.getString(2), tr.getString(3), tr.getString(4), tr.getString(5), tr.getString(6), tr.getString(7), tr.getInt(8), tr.getInt(9), tr.getString(10), tr.getString(11));
   	// println(records[i]);
   }
+  // Loading the 2nd csv and printing it's values if needed
+  table2 = loadTable("world_cups.csv", "header");
+  worldCups = new WorldCup[table2.getRowCount()];
+  for(int i = 0; i < table2.getRowCount(); i++){
+  	TableRow tr = table2.getRow(i);
+  	worldCups[i] = new WorldCup(tr.getInt(0), tr.getString(1), tr.getString(2), tr.getString(3), tr.getString(4), tr.getString(5), tr.getInt(6), tr.getInt(7), tr.getInt(8), tr.getInt(9));
+  	//println(worldCups[i]);
+  }
+
 
   // Get countries for first panel
   firstPanelSetup();
