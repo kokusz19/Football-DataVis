@@ -162,22 +162,27 @@ void secondPanelDraw(){
 	textSize(12);
 	textAlign(LEFT);
 	
-	// Create the dropDownLists
+	// Create the dropDownLists and buttons to select/unselect countries
 	secondPanelG4P();
 	// println(chosenCountries);
 
 	// Show the selected countries
 	text("Selected countries", 5, 120);
-	int x = 10, y = 140, k = 0;
+	int x = 10, y = 140, k = 0, maxTextWidth = ceil(textWidth("Selected countries"));
 	for(int i = 0; i < chosenCountries.size(); i++){
 		if(y + i*15 >= height && k == 0){
 			y = 140;
-			x += 70;
+			x += maxTextWidth+5;
 			k = i;
 		}
+		if(textWidth(chosenCountries.get(i).name) > maxTextWidth)	
+			maxTextWidth = ceil(textWidth(chosenCountries.get(i).name));	
 		text(chosenCountries.get(i).name, x, y+(i-k)*15);	
 	}
-	
+
+	// To display the matches of the selected countries
+	if(chosenCountries != null && chosenCountries.size() != 0)
+		showMatchesOfTeams(chosenCountries, x+maxTextWidth+10, 200);	
 }
 void secondPanelG4P(){
 	// Create the first dropDownList
@@ -235,7 +240,25 @@ void secondPanelG4P(){
 	unSelectAll.draw();
 	text("Select all:", 445, 85);
 	text("Unselect all:", 445+textWidth("Select all")+110, 85);
-
+}
+void showMatchesOfTeams(List<Country> chosenCountries, int minX, int minY){
+	//stroke(color(255, 0, 0));
+	//line(minX, 0, minX, height);
+	List<Recording> chosenRecordings = new ArrayList<Recording>();
+	for(Recording record : records){
+		int presence = 0;
+		for(Country country : chosenCountries){
+			if(country.name.equals(record.homeTeam) || country.name.equals(record.awayTeam))
+				presence++;
+		}
+		if(presence == 2)
+			chosenRecordings.add(record);
+	}
+	// println(chosenRecordings);
+	int startY = minY;
+	for(int i = 0; i < chosenRecordings.size(); i++){
+		text(chosenRecordings.get(i).toString(), minX, startY+i*15);
+	}
 }
 // To handle button press on GButtons
 void handleButtonEvents(GButton button, GEvent event) {
@@ -280,6 +303,7 @@ void handleButtonEvents(GButton button, GEvent event) {
 		// println(chosenCountries);
    }
 }
+public void handleDropListEvents(GDropList list, GEvent event) { /* Just so the informational message gets hidden */ }
 
 void thirdPanelDraw(){
 	text("3333", 150, 150);
