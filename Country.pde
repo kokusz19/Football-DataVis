@@ -5,16 +5,14 @@ public class Country extends CountryStatic{
 	public int goalsGave, goalsGot;
 	public int won, draw, lost;
 	public int points;
-	public HashMap<Integer, Integer> pointsByYear;
-	public HashMap<Integer, Integer> goalsByYear;
+	public TreeMap<Integer, InterestingFacts> interestingFacts;
 
 	public Country(String tname){
 		id = count;
 		count++;
 		name = tname;
 		maxPlays = maxPlays+1;
-		pointsByYear = new HashMap<Integer, Integer>();
-		goalsByYear = new HashMap<Integer, Integer>();
+		interestingFacts = new TreeMap<Integer, InterestingFacts>();
 	}
 
 	public void update(Recording recording){
@@ -48,12 +46,23 @@ public class Country extends CountryStatic{
 			points += tmpPoints;
 			findMaxValues();
 
-			if(pointsByYear.containsKey(recording.year)){
-				pointsByYear.put(recording.year, pointsByYear.get(recording.year)+tmpPoints);
-				goalsByYear.put(recording.year, goalsByYear.get(recording.year)+recording.homeGoals);
+			if(interestingFacts.containsKey(recording.year)){
+				int currentPoints = interestingFacts.get(recording.year).pointsByYear;
+				int currentGoals = interestingFacts.get(recording.year).goalsByYear;
+				int currentPlacement = interestingFacts.get(recording.year).placementByYear;
+				InterestingFacts infa = new InterestingFacts(currentPoints+tmpPoints, currentGoals+recording.homeGoals, currentPlacement);
+				interestingFacts.put(recording.year, infa);
 			} else{
-				pointsByYear.put(recording.year, tmpPoints);
-				goalsByYear.put(recording.year, recording.homeGoals);
+				int currentPlacement = 0;
+				for(WorldCup wc : worldCups)
+					if(wc.year == recording.year){
+						if(wc.winner.equals(name))	currentPlacement = 1;
+						else if(wc.second.equals(name))	currentPlacement = 2;
+						else if(wc.third.equals(name))	currentPlacement = 3;
+						else if(wc.fourth.equals(name))	currentPlacement = 4;
+					}
+				InterestingFacts infa = new InterestingFacts(tmpPoints, recording.homeGoals, currentPlacement);
+				interestingFacts.put(recording.year, infa);
 			}
 
 		} else if(recording.awayTeam.equals(name)){
@@ -84,12 +93,23 @@ public class Country extends CountryStatic{
 			points += tmpPoints;
 			findMaxValues();
 
-			if(pointsByYear.containsKey(recording.year)){
-				pointsByYear.put(recording.year, pointsByYear.get(recording.year)+tmpPoints);
-				goalsByYear.put(recording.year, goalsByYear.get(recording.year)+recording.awayGoals);
+			if(interestingFacts.containsKey(recording.year)){
+				int currentPoints = interestingFacts.get(recording.year).pointsByYear;
+				int currentGoals = interestingFacts.get(recording.year).goalsByYear;
+				int currentPlacement = interestingFacts.get(recording.year).placementByYear;
+				InterestingFacts infa = new InterestingFacts(currentPoints+tmpPoints, currentGoals+recording.awayGoals, currentPlacement);
+				interestingFacts.put(recording.year, infa);
 			} else{
-				pointsByYear.put(recording.year, tmpPoints);
-				goalsByYear.put(recording.year, recording.awayGoals);
+				int currentPlacement = 0;
+				for(WorldCup wc : worldCups)
+					if(wc.year == recording.year){
+						if(wc.winner.equals(name))	currentPlacement = 1;
+						else if(wc.second.equals(name))	currentPlacement = 2;
+						else if(wc.third.equals(name))	currentPlacement = 3;
+						else if(wc.fourth.equals(name))	currentPlacement = 4;
+					}
+				InterestingFacts infa = new InterestingFacts(tmpPoints, recording.homeGoals, currentPlacement);
+				interestingFacts.put(recording.year, infa);
 			}
 		}
 	}
@@ -106,5 +126,23 @@ public class Country extends CountryStatic{
 
 	public String toString(){
 		return id + " " + name + " plays:" + plays + ", +goals:" + goalsGave + ", -goals:" + goalsGot + ", W" + won + ", D" + draw + ", L" + lost + ", PTS:" + points;
+	}
+
+	class InterestingFacts{
+		int pointsByYear;
+		int goalsByYear;
+		int placementByYear;
+
+		public InterestingFacts(int pby, int gby, int plby){
+			pointsByYear = pby;
+			goalsByYear = gby;
+			placementByYear = plby;
+		}
+
+		public String toString(){
+			if(placementByYear > 1)
+				return placementByYear + ". place, " + pointsByYear + "pts, " + goalsByYear + "goals";
+			return "No placement, " + pointsByYear + "pts, " + goalsByYear + "goals";
+		}
 	}
 }

@@ -2,6 +2,7 @@ import g4p_controls.*;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.TreeMap;
 
 // First loading in the data
 static final int PANEL_HEIGHT = 50; 
@@ -33,14 +34,6 @@ void setup(){
   panel.add(new Button(300, 0, 400, PANEL_HEIGHT));
   panel.add(new Button(400, 0, width, PANEL_HEIGHT));
 
-  // Loading the csv and printing it's values if needed
-  table = loadTable("world_cup_results.csv", "header");
-  records = new Recording[table.getRowCount()];
-  for(int i = 0; i < table.getRowCount(); i++){
-  	TableRow tr = table.getRow(i);
-  	records[i] = new Recording(tr.getInt(0), tr.getString(1), tr.getString(2), tr.getString(3), tr.getString(4), tr.getString(5), tr.getString(6), tr.getString(7), tr.getInt(8), tr.getInt(9), tr.getString(10), tr.getString(11));
-  	// println(records[i]);
-  }
   // Loading the 2nd csv and printing it's values if needed
   table2 = loadTable("world_cups.csv", "header");
   worldCups = new WorldCup[table2.getRowCount()];
@@ -50,6 +43,14 @@ void setup(){
   	//println(worldCups[i]);
   }
 
+  // Loading the csv and printing it's values if needed
+  table = loadTable("world_cup_results.csv", "header");
+  records = new Recording[table.getRowCount()];
+  for(int i = 0; i < table.getRowCount(); i++){
+  	TableRow tr = table.getRow(i);
+  	records[i] = new Recording(tr.getInt(0), tr.getString(1), tr.getString(2), tr.getString(3), tr.getString(4), tr.getString(5), tr.getString(6), tr.getString(7), tr.getInt(8), tr.getInt(9), tr.getString(10), tr.getString(11));
+  	// println(records[i]);
+  }
 
   // Get countries for first panel
   firstPanelSetup();
@@ -134,8 +135,8 @@ void firstPanelSetup(){
 	parallelCoordinatesView = new ParallelCoordinatesView(labels, samples, 0.0f, 100.0f, width-600, height-PANEL_HEIGHT);	
 /*for(Country country : countries){
 		println(country);
-		println("\tPoints: " + country.pointsByYear);
-		println("\tGoals" + country.goalsByYear);
+		println("\t" + country.interestingFacts);
+		//println("\tGoals" + country.goalsByYear);
 	}*/
 }
 void secondPanelSetup(){
