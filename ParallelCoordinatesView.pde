@@ -133,7 +133,8 @@ public class ParallelCoordinatesView extends Viewport{
           Axis axis = this.axes.get(j);
           float x = axis.getAxisX();
           float y = axis.getYOf(feature);
-          text(feature, x, y);
+          text(floor(feature), x, y);
+          text(floor(feature), x+1, y);
         }
       }
     }
