@@ -178,8 +178,8 @@ public class Axis{
     line(this.startX - this.range.getWidth(), this.startY, this.startX + this.range.getWidth(), this.startY); //top tick
     line(this.endX - this.range.getWidth(), this.endY, this.endX + this.range.getWidth(), this.endY); //bottom tick
     textAlign(RIGHT, CENTER);
-    text(this.max, this.startX - this.range.getWidth(), this.startY); //max
-    text(this.min, this.endX - this.range.getWidth(), this.endY); //min
+    text(floor(this.max), this.startX - this.range.getWidth(), this.startY); //max
+    text(floor(this.min), this.endX - this.range.getWidth(), this.endY); //min
   }
   private void drawRangeWith(color rangeColor){
     noStroke();
@@ -197,9 +197,9 @@ public class Axis{
     line(this.minKnob.getX() - this.minKnob.getWidth() / 2.0f, this.minKnob.getY(), this.minKnob.getX() + this.minKnob.getWidth() * 3.0f / 2.0f, this.minKnob.getY());
     textAlign(RIGHT, CENTER);
     if(this.currentMax != this.max)
-      text(this.currentMax, this.maxKnob.getX() - this.maxKnob.getWidth(), this.maxKnob.getY() + this.maxKnob.getHeight()); //currentMax
+      text(floor(this.currentMax), this.maxKnob.getX() - this.maxKnob.getWidth(), this.maxKnob.getY() + this.maxKnob.getHeight()); //currentMax
     if(this.currentMin != this.min)
-      text(this.currentMin, this.minKnob.getX() - this.minKnob.getWidth(), this.minKnob.getY()); //currentMin
+      text(floor(this.currentMin), this.minKnob.getX() - this.minKnob.getWidth(), this.minKnob.getY()); //currentMin
   }
 
 }
