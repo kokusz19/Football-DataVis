@@ -18,6 +18,7 @@ ParallelCoordinatesView parallelCoordinatesView;
 
 // Second panel
 GDropList dl, dl2;
+List<Country> chosenCountries;
 
 // Third panel
 
@@ -133,26 +134,36 @@ void firstPanelSetup(){
 		samples.add(new Sample(features, classLabel));
 	}
 	parallelCoordinatesView = new ParallelCoordinatesView(labels, samples, 0.0f, 100.0f, width-600, height-PANEL_HEIGHT);	
-/*for(Country country : countries){
+  /*for(Country country : countries){
 		println(country);
 		println("\t" + country.interestingFacts);
 		//println("\tGoals" + country.goalsByYear);
 	}*/
 }
 void secondPanelSetup(){
-	
+	countriesSetup();
+	chosenCountries = new ArrayList<Country>();
 }
 void secondPanelDraw(){
 	String[] countryNames = new String[countries.size()+1];
 	textSize(12);
 	textAlign(LEFT);
 	
+	secondPanelDropDownLists(countryNames);
+	// println(chosenCountries);
+}
+void secondPanelDropDownLists(String[] countryNames){
 	// Create the first dropDownList
 	text("Not selected countries", 5, 62);
 	if(dl != null){
 		if(dl.getSelectedIndex() != 0){
 			dl2.addItem(dl.getSelectedText());
 			int idx = dl.getSelectedIndex();
+			
+			for(Country country : countries)
+				if(country.name.equals(dl.getSelectedText()))
+					chosenCountries.add(country);
+
 			dl.setSelected(0);
 			dl.removeItem(idx);
 		}
@@ -172,6 +183,11 @@ void secondPanelDraw(){
 		if(dl2.getSelectedIndex() != 0){
 			dl.addItem(dl2.getSelectedText());
 			int idx = dl2.getSelectedIndex();
+
+			for(Country country : chosenCountries)
+				if(country.name.equals(dl2.getSelectedText()))
+					chosenCountries.remove(country);
+
 			dl2.setSelected(0);
 			dl2.removeItem(idx);
 		}
