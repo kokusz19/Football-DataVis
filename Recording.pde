@@ -29,7 +29,7 @@ public class Recording{
 				tmpMonth = 0;
 				break;
 		}
-		dateTime = LocalDateTime.of(Integer.parseInt(split(tmpdate, '.')[2])+2000, tmpMonth, Integer.parseInt(split(tmpdate, '.')[0]), Integer.parseInt(split(tmptime, ':')[0]), Integer.parseInt(split(tmptime, ':')[1]));
+		dateTime = LocalDateTime.of(Integer.parseInt(split(tmpdate, '.')[2])+floor(year/100)*100, tmpMonth, Integer.parseInt(split(tmpdate, '.')[0]), Integer.parseInt(split(tmptime, ':')[0]), Integer.parseInt(split(tmptime, ':')[1]));
 		round = tmpround;
 		stadium = tmpstadium;
 		city = tmpcity;
