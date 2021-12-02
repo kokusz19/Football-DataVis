@@ -2,6 +2,7 @@ import g4p_controls.*;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.TreeMap;
 
 // First loading in the data
@@ -14,10 +15,12 @@ WorldCup[] worldCups;
 
 // First Panel
 List<Country> countries;
+String[] countryNames;
 ParallelCoordinatesView parallelCoordinatesView;
 
 // Second panel
 GDropList dl, dl2;
+GButton selectAll, unSelectAll;
 List<Country> chosenCountries;
 
 // Third panel
@@ -30,9 +33,9 @@ void setup(){
   // Create the navigation panel (last panel is always a placeholder only, without any function)
   panel = new ArrayList<Button>();
   panel.add(new Button(0, 0, 100, PANEL_HEIGHT, "Overall"));
-  panel.add(new Button(100, 0, 250, PANEL_HEIGHT, "Play X Score"));
-  panel.add(new Button(250, 0, 300, PANEL_HEIGHT));
-  panel.add(new Button(300, 0, 400, PANEL_HEIGHT));
+  panel.add(new Button(100, 0, 150, PANEL_HEIGHT, "Play X Score"));
+  panel.add(new Button(250, 0, 50, PANEL_HEIGHT));
+  panel.add(new Button(300, 0, 100, PANEL_HEIGHT));
   panel.add(new Button(400, 0, width, PANEL_HEIGHT));
 
   // Loading the 2nd csv and printing it's values if needed
@@ -67,6 +70,8 @@ void draw(){
 			if(dl != null){
 				dl.setVisible(false);
 				dl2.setVisible(false);
+				selectAll.setVisible(false);
+				unSelectAll.setVisible(false);
 			}
 			parallelCoordinatesView.draw();
 			break;
@@ -75,6 +80,8 @@ void draw(){
 			if(dl != null){
 				dl.setVisible(true);
 				dl2.setVisible(true);
+				selectAll.setVisible(true);
+				unSelectAll.setVisible(true);
 			}
 			secondPanelDraw();
 			break;
@@ -83,6 +90,8 @@ void draw(){
 			if(dl != null){
 				dl.setVisible(false);
 				dl2.setVisible(false);
+				selectAll.setVisible(false);
+				unSelectAll.setVisible(false);
 			}
 			thirdPanelDraw();
 			break;
@@ -91,6 +100,8 @@ void draw(){
 			if(dl != null){
 				dl.setVisible(false);
 				dl2.setVisible(false);
+				selectAll.setVisible(false);
+				unSelectAll.setVisible(false);
 			}
 			fourthPanelDraw();
 			break;
@@ -142,19 +153,35 @@ void firstPanelSetup(){
 }
 void secondPanelSetup(){
 	countriesSetup();
-	chosenCountries = new ArrayList<Country>();
+	// Had to use CopyOnWriteArrayList to sort out the "ConcurrentModificationException"
+	// Occured: 2nd panel, after selecting a few countries, then clicked a button and tried to remove a country using the 2nd dropdownlist, the exception has been thrown
+	chosenCountries = new CopyOnWriteArrayList<Country>();
 }
 void secondPanelDraw(){
-	String[] countryNames = new String[countries.size()+1];
+	countryNames = new String[countries.size()+1];
 	textSize(12);
 	textAlign(LEFT);
 	
-	secondPanelDropDownLists(countryNames);
+	// Create the dropDownLists
+	secondPanelG4P();
 	// println(chosenCountries);
+
+	// Show the selected countries
+	text("Selected countries", 5, 120);
+	int x = 10, y = 140, k = 0;
+	for(int i = 0; i < chosenCountries.size(); i++){
+		if(y + i*15 >= height && k == 0){
+			y = 140;
+			x += 70;
+			k = i;
+		}
+		text(chosenCountries.get(i).name, x, y+(i-k)*15);	
+	}
+	
 }
-void secondPanelDropDownLists(String[] countryNames){
+void secondPanelG4P(){
 	// Create the first dropDownList
-	text("Not selected countries", 5, 62);
+	//text("Not selected countries", 5, 62);
 	if(dl != null){
 		if(dl.getSelectedIndex() != 0){
 			dl2.addItem(dl.getSelectedText());
@@ -168,7 +195,7 @@ void secondPanelDropDownLists(String[] countryNames){
 			dl.removeItem(idx);
 		}
 	} else{
-		dl = new GDropList(this, 5f, 70f, 200f, 200f);
+		dl = new GDropList(this, 5f, 60f, 200f, 200f);
 		countryNames[0] = "Select a country";
 		for(int i = 1; i <= countries.size(); i++){
 			countryNames[i] = countries.get(i-1).name;
@@ -178,7 +205,7 @@ void secondPanelDropDownLists(String[] countryNames){
 	dl.draw();
 
 	// Create the second dropDownList
-	text("Selected countries", 5, 290);
+	//text("Selected countries", 225, 70);
 	if(dl2 != null){
 		if(dl2.getSelectedIndex() != 0){
 			dl.addItem(dl2.getSelectedText());
@@ -192,12 +219,68 @@ void secondPanelDropDownLists(String[] countryNames){
 			dl2.removeItem(idx);
 		}
 	} else{
-		dl2 = new GDropList(this, 5f, 300f, 200f, 200f);
+		dl2 = new GDropList(this, 225f, 60f, 200f, 200f);
 		String[] tmp = new String[]{ "Unselect a country" };
 		dl2.setItems(tmp, 0);
 	}		
 	dl2.draw();
+
+
+	// Create buttons with text
+	if(selectAll == null){
+		selectAll = new GButton(this, 445+textWidth("Select all")+5, 60, 100, 40f);
+		unSelectAll = new GButton(this, 445+textWidth("Select all")+110+textWidth("unSelectAll")+10, 60, 100, 40f);
+	}	
+	selectAll.draw();
+	unSelectAll.draw();
+	text("Select all:", 445, 85);
+	text("Unselect all:", 445+textWidth("Select all")+110, 85);
+
 }
+// To handle button press on GButtons
+void handleButtonEvents(GButton button, GEvent event) {
+   if(button == selectAll && event == GEvent.CLICKED){
+		// GDropLists if set to "null" or if they are disposed, still can't be rendered over or can't be reinitialized
+		// If they are set to invisible (GDropList.setVisible(false)), this issue does not occur
+ 		dl.setVisible(false);
+ 		dl2.setVisible(false);
+    dl = new GDropList(this, 5f, 60f, 200f, 200f);
+    String[] tmp = new String[]{ "Select a country" };
+  	dl.setItems(tmp, 0);
+
+		dl2 = new GDropList(this, 225f, 60f, 200f, 200f);
+    countryNames[0] = "Unselect a country";
+		for(int i = 1; i <= countries.size(); i++){
+			countryNames[i] = countries.get(i-1).name;
+		}
+		dl2.setItems(countryNames, 0);
+
+		chosenCountries.clear();
+  	for(Country country : countries)
+			chosenCountries.add(country);
+		// println("select all");
+		// println(chosenCountries);
+   }
+   if(button == unSelectAll && event == GEvent.CLICKED){
+ 		dl.setVisible(false);
+ 		dl2.setVisible(false);
+    dl = new GDropList(this, 5f, 60f, 200f, 200f);
+    countryNames[0] = "Select a country";
+		for(int i = 1; i <= countries.size(); i++){
+			countryNames[i] = countries.get(i-1).name;
+		}
+		dl.setItems(countryNames, 0);
+
+		dl2 = new GDropList(this, 225f, 60f, 200f, 200f);
+    String[] tmp = new String[]{ "Unselect a country" };
+  	dl2.setItems(tmp, 0);
+
+  	chosenCountries.clear();
+		// println("unselect all");
+		// println(chosenCountries);
+   }
+}
+
 void thirdPanelDraw(){
 	text("3333", 150, 150);
 }
@@ -241,9 +324,7 @@ void mousePressed() {
   		panel.get(i).currentColor = panel.get(i).selectedColor;
   		panelSelected = i;
   	}
-  // MousePressed for ParallelCoordinatesView
   parallelCoordinatesView.onMousePressedAt(mouseX, mouseY);
-
 }
 void mouseClicked(){
   parallelCoordinatesView.onMouseClickedOn(mouseX, mouseY);
@@ -274,5 +355,5 @@ void createButton(Button button, boolean selected){
       button.currentColor = button.currentColor;
     fill(button.currentColor);
     noStroke();
-    rect(button.rectX, button.rectY, button.rectXSize, button.rectYSize);
+    rect(button.rectX, button.rectY, (button.rectX+button.rectXSize), (button.rectY+button.rectYSize));
 }

@@ -30,7 +30,7 @@
 
   void update() {
     if (mouseX == 0 && mouseY == 0);
-    else if ( overRect(rectX, rectY, (rectXSize-rectX), (rectYSize-rectY)) ) {
+    else if ( overRect(rectX, rectY, (rectXSize), (rectYSize)) ) {
       rectOver = true;
       currentColor = highlightColor;
     } else {
@@ -40,7 +40,8 @@
     textAlign(CENTER, CENTER);
     textSize(TEXT_SIZE);
     fill(0);
-    text(text, this.rectX+(this.rectXSize-this.rectX)/2, this.rectY+(this.rectYSize-this.rectY)/2);
+    text(text, (this.rectX + this.rectXSize)/2+this.rectX/2, (this.rectYSize+this.rectY*2)/2);
+    textSize(12);
   }
     
   boolean overRect(int x, int y, int width, int height)  {
