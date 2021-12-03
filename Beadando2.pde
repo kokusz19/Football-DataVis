@@ -21,7 +21,9 @@ ParallelCoordinatesView parallelCoordinatesView;
 // Second panel
 GDropList dl, dl2;
 GButton selectAll, unSelectAll;
+GSlider slider;
 List<Country> chosenCountries;
+int numberOfRecords;
 
 // Third panel
 
@@ -72,6 +74,7 @@ void draw(){
 				dl2.setVisible(false);
 				selectAll.setVisible(false);
 				unSelectAll.setVisible(false);
+				slider.setVisible(false);
 			}
 			parallelCoordinatesView.draw();
 			break;
@@ -82,6 +85,7 @@ void draw(){
 				dl2.setVisible(true);
 				selectAll.setVisible(true);
 				unSelectAll.setVisible(true);
+				slider.setVisible(true);
 			}
 			secondPanelDraw();
 			break;
@@ -92,6 +96,7 @@ void draw(){
 				dl2.setVisible(false);
 				selectAll.setVisible(false);
 				unSelectAll.setVisible(false);
+				slider.setVisible(false);
 			}
 			thirdPanelDraw();
 			break;
@@ -102,6 +107,7 @@ void draw(){
 				dl2.setVisible(false);
 				selectAll.setVisible(false);
 				unSelectAll.setVisible(false);
+				slider.setVisible(false);
 			}
 			fourthPanelDraw();
 			break;
@@ -156,6 +162,7 @@ void secondPanelSetup(){
 	// Had to use CopyOnWriteArrayList to sort out the "ConcurrentModificationException"
 	// Occured: 2nd panel, after selecting a few countries, then clicked a button and tried to remove a country using the 2nd dropdownlist, the exception has been thrown
 	chosenCountries = new CopyOnWriteArrayList<Country>();
+	numberOfRecords = 0;
 }
 void secondPanelDraw(){
 	countryNames = new String[countries.size()+1];
@@ -183,8 +190,20 @@ void secondPanelDraw(){
 	textSize(12);
 	
 	// To display the matches of the selected countries
+	int sliderMin = 120, sliderMax = sliderMin+20*numberOfRecords-650;
+	if(sliderMax < sliderMin) sliderMax = sliderMin;
+	if((slider == null && chosenCountries != null) || (slider == null && chosenCountries.size() > 1)){
+		// 1Param - Window, 2Param startWidth, 3Param, StartHeight
+		slider = new GSlider(this, 700, height, width/2-115, width+178, 20);
+		slider.setRotation(-PI/2);
+		slider.setValue(sliderMin);
+	}
+	slider.setLimits(sliderMax, sliderMin);
+	int currentVal = slider.getValueI();
+	
+	//println(mouseX + " " + mouseY);
 	if(chosenCountries != null && chosenCountries.size() != 0)
-		showMatchesOfTeams(chosenCountries, x+maxTextWidth+10, 120);	
+		showMatchesOfTeams(chosenCountries, x+maxTextWidth+10, (currentVal-2*sliderMin)*-1);	
 }
 void secondPanelG4P(){
 	// Create the first dropDownList
@@ -244,7 +263,7 @@ void secondPanelG4P(){
 	text("Unselect all:", 445+textWidth("Select all")+110, 85);
 }
 void showMatchesOfTeams(List<Country> chosenCountries, int minX, int minY){
-	fill(185);
+	fill(240);
 	rect(minX, minY-15, width, height);
 	fill(0);
 	//line(minX, minY-15, minX, height);
@@ -271,6 +290,7 @@ void showMatchesOfTeams(List<Country> chosenCountries, int minX, int minY){
 	int startY = minY, midPoint = (minX+width)/2, leftTextSize = 0, rightTextSize = 0;
 	textSize(15);
 	for(Recording tmpRecording : chosenRecordings){
+		numberOfRecords = chosenRecordings.size();
 		//text(chosenRecordings.get(i).toString(), minX, startY+i*15);
 		String homeTeam = tmpRecording.homeTeam, awayTeam = tmpRecording.awayTeam, dateHappened = tmpRecording.dateTime.toString(), group = tmpRecording.round, observation = tmpRecording.observation;
 		int homeGoals = tmpRecording.homeGoals, awayGoals = tmpRecording.awayGoals;
