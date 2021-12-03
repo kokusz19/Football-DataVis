@@ -167,6 +167,7 @@ void secondPanelDraw(){
 	// println(chosenCountries);
 
 	// Show the selected countries
+	textSize(15);
 	text("Selected countries", 5, 120);
 	int x = 10, y = 140, k = 0, maxTextWidth = ceil(textWidth("Selected countries"));
 	for(int i = 0; i < chosenCountries.size(); i++){
@@ -179,10 +180,11 @@ void secondPanelDraw(){
 			maxTextWidth = ceil(textWidth(chosenCountries.get(i).name));	
 		text(chosenCountries.get(i).name, x, y+(i-k)*15);	
 	}
-
+	textSize(12);
+	
 	// To display the matches of the selected countries
 	if(chosenCountries != null && chosenCountries.size() != 0)
-		showMatchesOfTeams(chosenCountries, x+maxTextWidth+10, 200);	
+		showMatchesOfTeams(chosenCountries, x+maxTextWidth+10, 120);	
 }
 void secondPanelG4P(){
 	// Create the first dropDownList
@@ -242,8 +244,15 @@ void secondPanelG4P(){
 	text("Unselect all:", 445+textWidth("Select all")+110, 85);
 }
 void showMatchesOfTeams(List<Country> chosenCountries, int minX, int minY){
+	fill(185);
+	rect(minX, minY-15, width, height);
+	fill(0);
+	//line(minX, minY-15, minX, height);
+	//line(minX, minY-15, width, minY-15);
+	//stroke(0);
 	//stroke(color(255, 0, 0));
 	//line(minX, 0, minX, height);
+	// Gather the recordings, where 2 (out of all) countries played against each other
 	List<Recording> chosenRecordings = new ArrayList<Recording>();
 	for(Recording record : records){
 		int presence = 0;
@@ -255,9 +264,71 @@ void showMatchesOfTeams(List<Country> chosenCountries, int minX, int minY){
 			chosenRecordings.add(record);
 	}
 	// println(chosenRecordings);
-	int startY = minY;
-	for(int i = 0; i < chosenRecordings.size(); i++){
-		text(chosenRecordings.get(i).toString(), minX, startY+i*15);
+
+	// Display the results
+	color greenColor = color(10, 101, 34);
+	color redColor = color(194, 24, 7);
+	int startY = minY, midPoint = (minX+width)/2, leftTextSize = 0, rightTextSize = 0;
+	textSize(15);
+	for(Recording tmpRecording : chosenRecordings){
+		//text(chosenRecordings.get(i).toString(), minX, startY+i*15);
+		String homeTeam = tmpRecording.homeTeam, awayTeam = tmpRecording.awayTeam, dateHappened = tmpRecording.dateTime.toString(), group = tmpRecording.round, observation = tmpRecording.observation;
+		int homeGoals = tmpRecording.homeGoals, awayGoals = tmpRecording.awayGoals;
+		textAlign(CENTER, CENTER);
+		text(":", midPoint, startY);
+		
+		if(tmpRecording.winner.equals(homeTeam))
+			fill(greenColor);
+		else if(tmpRecording.winner.equals(awayTeam))
+			fill(redColor);
+		else
+			fill(0);
+		textAlign(RIGHT, CENTER);
+		text(homeTeam + " " + homeGoals, midPoint-textWidth(" : "), startY);
+		if(leftTextSize < ceil(textWidth(homeTeam + " " + homeGoals))+ceil(textWidth(" : ")))	leftTextSize = ceil(textWidth(homeTeam + " " + homeGoals))+ceil(textWidth(" : "));
+
+		if(tmpRecording.winner.equals(awayTeam))
+			fill(greenColor);
+		else if(tmpRecording.winner.equals(homeTeam))
+			fill(redColor);
+		else
+			fill(0);
+		textAlign(LEFT, CENTER);
+		text(awayGoals + " " + awayTeam, midPoint+textWidth(" : "), startY);
+		if(rightTextSize < ceil(textWidth(awayTeam + " " + awayGoals))+ceil(textWidth(" : ")))	rightTextSize = ceil(textWidth(awayTeam + " " + awayGoals))+ceil(textWidth(" : "));
+
+		// Make text "bold"
+		if(tmpRecording.winner.equals(homeTeam)){
+			fill(greenColor);
+			textAlign(RIGHT, CENTER);
+			text(homeTeam + " " + homeGoals, midPoint-textWidth(" : ")+1, startY);
+		} else if(tmpRecording.winner.equals(awayTeam)){
+			fill(greenColor);
+			textAlign(LEFT, CENTER);
+			text(awayGoals + " " + awayTeam, midPoint+textWidth(" : ")+1, startY);
+		}
+		startY += 20;
+	}
+	textSize(12);
+	fill(0);
+
+	startY = minY;
+	int sizeOfRounds = 0;
+	for(Recording tmpRecording : chosenRecordings){
+		textAlign(RIGHT, CENTER);
+		if(sizeOfRounds < ceil(textWidth(tmpRecording.round)))	
+			sizeOfRounds = ceil(textWidth(tmpRecording.round));
+		text(tmpRecording.round, midPoint-leftTextSize-20, startY);
+		textAlign(LEFT, CENTER);
+		text(tmpRecording.observation, midPoint+rightTextSize+20, startY);
+		startY += 20;
+	}
+
+	startY = minY;
+	for(Recording tmpRecording : chosenRecordings){
+		textAlign(RIGHT, CENTER);
+		text(tmpRecording.getDateTime(), midPoint-leftTextSize-20-sizeOfRounds-20, startY);
+		startY += 20;
 	}
 }
 // To handle button press on GButtons

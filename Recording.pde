@@ -10,6 +10,7 @@ public class Recording{
 	public int awayGoals;
 	public String awayTeam;
 	public String observation;
+	public String winner;
 
 	public Recording(int tmpyear, String tmpdate, String tmptime, String tmpround, String tmpstadium, String tmpcity, String tmpcountry, String tmphomeTeam, int tmphomeGoals, int tmpawayGoals, String tmpawayTeam, String tmpobservation){
 		year = tmpyear;
@@ -39,11 +40,30 @@ public class Recording{
 		awayGoals = tmpawayGoals;
 		awayTeam = tmpawayTeam;
 		observation = tmpobservation;
+
+		if(homeGoals > awayGoals)	winner = homeTeam;
+		else if(homeGoals < awayGoals) winner = awayTeam;
+		else{
+			if(observation == null || observation.equals(""))	winner = "draw";
+			else if(observation.contains(homeTeam))	winner = homeTeam;
+			else winner = awayTeam;
+		}
+	}
+
+	public String getDateTime(){
+		return dateTime.getYear() + "." + dateTime.getMonth() + ".".concat(formatInt(dateTime.getDayOfMonth())) + " ".concat(formatInt(dateTime.getHour())) + ":".concat(formatInt(dateTime.getMinute()));
 	}
 
 	public String toString(){
-		return year + " - " + dateTime.getYear() + "." + dateTime.getMonth() + "." + dateTime.getDayOfMonth() + " " + dateTime.getHour() + ":" + dateTime.getMinute() + " - " +
+		return year + " - " + dateTime.getYear() + "." + dateTime.getMonth() + ".".concat(formatInt(dateTime.getDayOfMonth())) + "\t".concat(formatInt(dateTime.getHour())) + ":".concat(formatInt(dateTime.getMinute())) + " - " +
 		 round + " - " + stadium + " - " + city + " - " + country + " - " +
 		 homeTeam + " - " + homeGoals + " - " + awayGoals + " - " + awayTeam + " - " + observation;
+	}
+
+	String formatInt(int input){
+		String output = String.valueOf(input);
+		if(output.length() == 1)
+			output = "0".concat(output);
+		return output;
 	}
 }
