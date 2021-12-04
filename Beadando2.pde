@@ -26,6 +26,9 @@ List<Country> chosenCountries;
 int numberOfRecords;
 
 // Third panel
+PShape world;
+List<Country> worldCountries;
+boolean firstScaling;
 
 // Fourth panel
 
@@ -36,9 +39,9 @@ void setup(){
   panel = new ArrayList<Button>();
   panel.add(new Button(0, 0, 100, PANEL_HEIGHT, "Overall"));
   panel.add(new Button(100, 0, 150, PANEL_HEIGHT, "Play X Score"));
-  panel.add(new Button(250, 0, 50, PANEL_HEIGHT));
-  panel.add(new Button(300, 0, 100, PANEL_HEIGHT));
-  panel.add(new Button(400, 0, width, PANEL_HEIGHT));
+  panel.add(new Button(250, 0, 150, PANEL_HEIGHT, "World map"));
+  panel.add(new Button(400, 0, 100, PANEL_HEIGHT));
+  panel.add(new Button(500, 0, width, PANEL_HEIGHT));
 
   // Loading the 2nd csv and printing it's values if needed
   table2 = loadTable("world_cups.csv", "header");
@@ -61,6 +64,7 @@ void setup(){
   // Get countries for first panel
   firstPanelSetup();
   secondPanelSetup();
+  thirdPanelSetup();
 }
 
 void draw(){
@@ -395,10 +399,8 @@ void handleButtonEvents(GButton button, GEvent event) {
    }
 }
 public void handleDropListEvents(GDropList list, GEvent event) { /* Just so the informational message gets hidden */ }
+public void handleSliderEvents(GValueControl slider, GEvent event) { /* Just so the informational message gets hidden */ }
 
-void thirdPanelDraw(){
-	text("3333", 150, 150);
-}
 void fourthPanelDraw(){
 	text("4444", 150, 150);
 }
@@ -430,8 +432,62 @@ void countriesSetup(){
 	}
 
 	//for(Country country : countries)
-	//	println(country);
+	//	println(country.name);
 }
+
+void thirdPanelSetup(){
+  world = loadShape("world.svg");
+  worldCountries = new ArrayList<Country>();
+	firstScaling = true;
+}
+void thirdPanelDraw(){
+	getWorldCountries();
+	basicColourCountries();
+}
+void getWorldCountries(){
+	// Get all the lines from the Europe SVG
+  String[] lines = loadStrings("world.svg");
+  for(int i = 0 ; i < lines.length; i++){
+    if(lines[i].startsWith(" <path")){
+      // Check all the pathes (countries)
+      String[] elements = lines[i].split("=");
+    	for(int j = 0; j < elements.length-1; j++){
+    		boolean present = false;
+    		if(elements[j].endsWith("name")){
+    			String tmpCountry = elements[j+1].replace("\"", "").replace(">", "");
+	      	for(Country tCountry : worldCountries)
+	      		if(tCountry.name.equals(tmpCountry))
+	      			present = true;
+	      	if(!present)
+	      		worldCountries.add(new Country(tmpCountry));
+    		} else if(elements[j].endsWith("class")){
+    			String tmpCountry = elements[j+1].split("\"")[1];
+	      	for(Country tCountry : worldCountries)
+	      		if(tCountry.name.equals(tmpCountry))
+	      			present = true;
+	      	if(!present)
+	      		worldCountries.add(new Country(tmpCountry));
+    		}
+    	}
+    }
+  }
+  //for(Country tCountry : worldCountries)
+  //  println(tCountry.id + " " + tCountry.name);
+}
+void basicColourCountries(){
+  // Set basic light green colouring for each found country
+  if(firstScaling){
+  	for(int i = 0; i < worldCountries.size(); i++)
+  		world.getChild(i).scale(0.8);
+  	firstScaling = false;
+  }
+  for(int i = 0; i < worldCountries.size(); i++){
+    world.getChild(i).setFill(color(0, 230, 0, 25));
+    shape(world.getChild(i), 0, 1.5*PANEL_HEIGHT);
+  }
+  
+}
+
 void mousePressed() {
   // Check if the mouse has been clicked inside of a panel
   for(int i = 0; i < panel.size()-1; i++)
