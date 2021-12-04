@@ -28,7 +28,8 @@ int numberOfRecords;
 // Third panel
 PShape world;
 List<Country> worldCountries;
-boolean firstScaling;
+GButton switchShow;
+boolean switchShowB;
 
 // Fourth panel
 
@@ -57,7 +58,7 @@ void setup(){
   records = new Recording[table.getRowCount()];
   for(int i = 0; i < table.getRowCount(); i++){
   	TableRow tr = table.getRow(i);
-  	records[i] = new Recording(tr.getInt(0), tr.getString(1), tr.getString(2), tr.getString(3), tr.getString(4), tr.getString(5), tr.getString(6), tr.getString(7), tr.getInt(8), tr.getInt(9), tr.getString(10), tr.getString(11));
+  	records[i] = new Recording(tr.getInt(0), tr.getString(1), tr.getString(2), tr.getString(3), tr.getString(4), tr.getString(5), tr.getString(6), tr.getString(7).replace("_", " "), tr.getInt(8), tr.getInt(9), tr.getString(10).replace("_", " "), tr.getString(11));
   	// println(records[i]);
   }
 
@@ -80,6 +81,9 @@ void draw(){
 				unSelectAll.setVisible(false);
 				slider.setVisible(false);
 			}
+			if(switchShow != null){
+				switchShow.setVisible(false);
+			}
 			parallelCoordinatesView.draw();
 			break;
 		}
@@ -90,6 +94,9 @@ void draw(){
 				selectAll.setVisible(true);
 				unSelectAll.setVisible(true);
 				slider.setVisible(true);
+			}
+			if(switchShow != null){
+				switchShow.setVisible(false);
 			}
 			secondPanelDraw();
 			break;
@@ -102,6 +109,9 @@ void draw(){
 				unSelectAll.setVisible(false);
 				slider.setVisible(false);
 			}
+			if(switchShow != null){
+				switchShow.setVisible(true);
+			}
 			thirdPanelDraw();
 			break;
 		}
@@ -112,6 +122,9 @@ void draw(){
 				selectAll.setVisible(false);
 				unSelectAll.setVisible(false);
 				slider.setVisible(false);
+			}
+			if(switchShow != null){
+				switchShow.setVisible(false);
 			}
 			fourthPanelDraw();
 			break;
@@ -175,7 +188,7 @@ void secondPanelDraw(){
 	
 	// Create the dropDownLists and buttons to select/unselect countries
 	secondPanelG4P();
-	// println(chosenCountries);
+	//println(chosenCountries);
 
 	// Show the selected countries
 	textSize(15);
@@ -205,7 +218,6 @@ void secondPanelDraw(){
 	slider.setLimits(sliderMax, sliderMin);
 	int currentVal = slider.getValueI();
 	
-	//println(mouseX + " " + mouseY);
 	if(chosenCountries != null && chosenCountries.size() != 0)
 		showMatchesOfTeams(chosenCountries, x+maxTextWidth+10, (currentVal-2*sliderMin)*-1);	
 }
@@ -258,13 +270,11 @@ void secondPanelG4P(){
 
 	// Create buttons with text
 	if(selectAll == null){
-		selectAll = new GButton(this, 445+textWidth("Select all")+5, 60, 100, 40f);
-		unSelectAll = new GButton(this, 445+textWidth("Select all")+110+textWidth("unSelectAll")+10, 60, 100, 40f);
+		selectAll = new GButton(this, 450, 60, 100, 40f, "Select all");
+		unSelectAll = new GButton(this, 575, 60, 100, 40f, "Unselect all");
 	}	
 	selectAll.draw();
 	unSelectAll.draw();
-	text("Select all:", 445, 85);
-	text("Unselect all:", 445+textWidth("Select all")+110, 85);
 }
 void showMatchesOfTeams(List<Country> chosenCountries, int minX, int minY){
 	fill(240);
@@ -397,14 +407,12 @@ void handleButtonEvents(GButton button, GEvent event) {
 		// println("unselect all");
 		// println(chosenCountries);
    }
+  if(button == switchShow && event == GEvent.CLICKED){
+  	switchShowB = !switchShowB;
+  }
 }
 public void handleDropListEvents(GDropList list, GEvent event) { /* Just so the informational message gets hidden */ }
 public void handleSliderEvents(GValueControl slider, GEvent event) { /* Just so the informational message gets hidden */ }
-
-void fourthPanelDraw(){
-	text("4444", 150, 150);
-}
-
 
 void countriesSetup(){
 	countries = new ArrayList<Country>();
@@ -436,56 +444,118 @@ void countriesSetup(){
 }
 
 void thirdPanelSetup(){
-  world = loadShape("world.svg");
+  world = loadShape("worldLow.svg");
+  world.scale(0.5);
   worldCountries = new ArrayList<Country>();
-	firstScaling = true;
+  switchShowB = false;
 }
 void thirdPanelDraw(){
 	getWorldCountries();
 	basicColourCountries();
+
+	if(switchShow == null)
+		switchShow = new GButton(this, 5, PANEL_HEIGHT+10, textWidth("Show attendances") > textWidth("Show world cups") ? textWidth("Show attendances")+10 : textWidth("Show world cups")+10, PANEL_HEIGHT);
+	if(switchShowB)
+		switchShow.setText("Show world cups");
+	else
+		switchShow.setText("Show attendances");
+
+
+	fill(color(255, 0, 0));
+	// 1) World cups
+	int maxWorldCup = 1;
+	TreeMap<String, Integer> worldCupsForCountries = new TreeMap<String, Integer>();
+	for(WorldCup wc : worldCups){
+		if(wc.country.contains("/")){
+			if(worldCupsForCountries.containsKey(wc.country.split("/")[0])){
+				int newValue = worldCupsForCountries.get(wc.country.split("/")[0])+1;
+				if(newValue > maxWorldCup)	maxWorldCup = newValue;
+				worldCupsForCountries.put(wc.country.split("/")[0], newValue);
+			}
+			else
+				worldCupsForCountries.put(wc.country.split("/")[0], 1);
+		} else{
+			if(worldCupsForCountries.containsKey(wc.country.split("/")[0])){
+				int newValue = worldCupsForCountries.get(wc.country)+1;
+				worldCupsForCountries.put(wc.country, newValue);
+				if(newValue > maxWorldCup)	maxWorldCup = newValue;
+			}
+			else
+				worldCupsForCountries.put(wc.country, 1);
+		}
+	}
+	advancedColourCountries(worldCupsForCountries, maxWorldCup);
+	//for(String countryName : worldCupsForCountries.keySet())
+	//	println(countryName + " " + worldCupsForCountries.get(countryName));  
+	// 2) Attendance
+	for(int i = 0; i < worldCountries.size(); i++){
+    /*if(world.getChild(i).contains(mouseX, mouseY-1.5*PANEL_HEIGHT))
+    	text(worldCountries.get(i).name, mouseX, mouseY);*/
+
+	}
+	fill(0);
 }
 void getWorldCountries(){
 	// Get all the lines from the Europe SVG
-  String[] lines = loadStrings("world.svg");
+  String[] lines = loadStrings("worldLow.svg");
+  
   for(int i = 0 ; i < lines.length; i++){
-    if(lines[i].startsWith(" <path")){
-      // Check all the pathes (countries)
-      String[] elements = lines[i].split("=");
-    	for(int j = 0; j < elements.length-1; j++){
-    		boolean present = false;
-    		if(elements[j].endsWith("name")){
-    			String tmpCountry = elements[j+1].replace("\"", "").replace(">", "");
-	      	for(Country tCountry : worldCountries)
-	      		if(tCountry.name.equals(tmpCountry))
-	      			present = true;
-	      	if(!present)
-	      		worldCountries.add(new Country(tmpCountry));
-    		} else if(elements[j].endsWith("class")){
-    			String tmpCountry = elements[j+1].split("\"")[1];
-	      	for(Country tCountry : worldCountries)
-	      		if(tCountry.name.equals(tmpCountry))
-	      			present = true;
-	      	if(!present)
-	      		worldCountries.add(new Country(tmpCountry));
-    		}
+  	if(lines[i].contains("title")){
+    	// Check all the pathes (countries)
+  		boolean present = false;
+			String tmpCountry = lines[i].split("=")[2].split("\"")[1];
+    	for(Country tCountry : worldCountries)
+    		if(tCountry.name.equals(tmpCountry))
+    			present = true;
+    	if(!present){
+    		Country asd = new Country(tmpCountry);
+    		//println(asd.id + " " + asd.name);
+    		worldCountries.add(asd);
     	}
-    }
+		}
   }
-  //for(Country tCountry : worldCountries)
-  //  println(tCountry.id + " " + tCountry.name);
+  //for(int i = 0; i < worldCountries.size(); i++)
+  //	println(i + " " + worldCountries.get(i).name);
 }
 void basicColourCountries(){
+	color startColor = color(255);
   // Set basic light green colouring for each found country
-  if(firstScaling){
-  	for(int i = 0; i < worldCountries.size(); i++)
-  		world.getChild(i).scale(0.8);
-  	firstScaling = false;
-  }
   for(int i = 0; i < worldCountries.size(); i++){
-    world.getChild(i).setFill(color(0, 230, 0, 25));
-    shape(world.getChild(i), 0, 1.5*PANEL_HEIGHT);
-  }
-  
+  	world.getChild(i).setFill(startColor);
+    world.getChild(i).setStroke(true);
+    world.getChild(i).setStrokeWeight(0.3f);
+    shape(world.getChild(i), 0, 2*PANEL_HEIGHT);
+	}
+}
+void advancedColourCountries(TreeMap<String, Integer> map, int maxValue){
+	if(!switchShowB){
+	  for(int i = 0; i < worldCountries.size(); i++){
+	  	for(String name : map.keySet()){
+	  		if(worldCountries.get(i).name.equals(name)){
+			  	world.getChild(i).setFill(color(0, 0, 255, float(255/maxValue)*map.get(name)));
+			    world.getChild(i).setStroke(true);
+			    world.getChild(i).setStrokeWeight(0.3f);
+			    shape(world.getChild(i), 0, 2*PANEL_HEIGHT);
+	 		 	}
+ 		  }
+ 		}for(int i = 0; i < worldCountries.size(); i++){
+	  	for(String name : map.keySet()){
+	  		if(worldCountries.get(i).name.equals(name)){
+			    if(world.getChild(i).contains(mouseX, mouseY-2*PANEL_HEIGHT)){
+			    	textAlign(LEFT, BOTTOM);
+			    	text(name+": " + map.get(name), mouseX, mouseY);
+			    }	  			
+	  		}
+	  	}
+		}
+	} else{
+
+	}
+}
+
+
+void fourthPanelDraw(){
+	text("4444", 150, 150);
 }
 
 void mousePressed() {
