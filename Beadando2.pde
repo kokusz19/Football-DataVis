@@ -455,13 +455,14 @@ void thirdPanelDraw(){
 
 	if(switchShow == null)
 		switchShow = new GButton(this, 5, PANEL_HEIGHT+10, textWidth("Show attendances") > textWidth("Show world cups") ? textWidth("Show attendances")+10 : textWidth("Show world cups")+10, PANEL_HEIGHT);
-	if(switchShowB)
-		switchShow.setText("Show world cups");
+	if(!switchShowB)
+		switchShow.setText("Showing world cups");
 	else
-		switchShow.setText("Show attendances");
+		switchShow.setText("Showing attendances");
 
 
 	fill(color(255, 0, 0));
+	textSize(15);
 	// 1) World cups
 	int maxWorldCup = 1;
 	TreeMap<String, Integer> worldCupsForCountries = new TreeMap<String, Integer>();
@@ -475,7 +476,7 @@ void thirdPanelDraw(){
 			else
 				worldCupsForCountries.put(wc.country.split("/")[0], 1);
 		} else{
-			if(worldCupsForCountries.containsKey(wc.country.split("/")[0])){
+			if(worldCupsForCountries.containsKey(wc.country)){
 				int newValue = worldCupsForCountries.get(wc.country)+1;
 				worldCupsForCountries.put(wc.country, newValue);
 				if(newValue > maxWorldCup)	maxWorldCup = newValue;
@@ -487,12 +488,41 @@ void thirdPanelDraw(){
 	advancedColourCountries(worldCupsForCountries, maxWorldCup);
 	//for(String countryName : worldCupsForCountries.keySet())
 	//	println(countryName + " " + worldCupsForCountries.get(countryName));  
-	// 2) Attendance
-	for(int i = 0; i < worldCountries.size(); i++){
-    /*if(world.getChild(i).contains(mouseX, mouseY-1.5*PANEL_HEIGHT))
-    	text(worldCountries.get(i).name, mouseX, mouseY);*/
 
+	// 2) Attendance
+	int maxAttendance = 0;
+	TreeMap<String, TreeMap<Integer, Integer>> attendanceAtCountries = new TreeMap<String, TreeMap<Integer, Integer>>();
+	for(WorldCup wc : worldCups){
+		if(wc.country.contains("/")){
+			if(attendanceAtCountries.containsKey(wc.country.split("/")[0])){
+				TreeMap<Integer, Integer> newValue = attendanceAtCountries.get(wc.country.split("/")[0]);
+				newValue.put(wc.year, wc.attendance);
+				attendanceAtCountries.put(wc.country.split("/")[0], newValue);
+				if(wc.attendance > maxAttendance)	maxAttendance = wc.attendance;
+			} else{
+				TreeMap<Integer, Integer> tmpTreeMap = new TreeMap<Integer, Integer>();
+				tmpTreeMap.put(wc.year, wc.attendance);
+				attendanceAtCountries.put(wc.country.split("/")[0], tmpTreeMap);
+			}
+		} else{
+			if(attendanceAtCountries.containsKey(wc.country)){
+				TreeMap<Integer, Integer> newValue = attendanceAtCountries.get(wc.country);
+				newValue.put(wc.year, wc.attendance);
+				attendanceAtCountries.put(wc.country, newValue);
+				if(wc.attendance > maxAttendance)	maxAttendance = wc.attendance;
+			} else{
+				TreeMap<Integer, Integer> tmpTreeMap = new TreeMap<Integer, Integer>();
+				tmpTreeMap.put(wc.year, wc.attendance);
+				attendanceAtCountries.put(wc.country, tmpTreeMap);
+			}
+		}
 	}
+	advancedColourCountries(attendanceAtCountries, maxAttendance, switchShowB);
+	textSize(12);
+	//for(String k1 : attendanceAtCountries.keySet())
+	//	for(int k2 : attendanceAtCountries.get(k1).keySet())
+	//		println(k1 + ", " + k2 + " - " + attendanceAtCountries.get(k1).get(k2));
+	
 	fill(0);
 }
 void getWorldCountries(){
@@ -529,30 +559,70 @@ void basicColourCountries(){
 }
 void advancedColourCountries(TreeMap<String, Integer> map, int maxValue){
 	if(!switchShowB){
-	  for(int i = 0; i < worldCountries.size(); i++){
-	  	for(String name : map.keySet()){
+	  for(int i = 0; i < worldCountries.size(); i++)
+	  	for(String name : map.keySet())
 	  		if(worldCountries.get(i).name.equals(name)){
 			  	world.getChild(i).setFill(color(0, 0, 255, float(255/maxValue)*map.get(name)));
 			    world.getChild(i).setStroke(true);
 			    world.getChild(i).setStrokeWeight(0.3f);
 			    shape(world.getChild(i), 0, 2*PANEL_HEIGHT);
 	 		 	}
- 		  }
- 		}for(int i = 0; i < worldCountries.size(); i++){
-	  	for(String name : map.keySet()){
-	  		if(worldCountries.get(i).name.equals(name)){
+ 		for(int i = 0; i < worldCountries.size(); i++)
+	  	for(String name : map.keySet())
+	  		if(worldCountries.get(i).name.equals(name))
 			    if(world.getChild(i).contains(mouseX, mouseY-2*PANEL_HEIGHT)){
 			    	textAlign(LEFT, BOTTOM);
 			    	text(name+": " + map.get(name), mouseX, mouseY);
 			    }	  			
-	  		}
-	  	}
-		}
-	} else{
+    colourScale(width-60, height/2-50, 50, 200, maxValue);
+	}	
+}
 
+void advancedColourCountries(TreeMap<String, TreeMap<Integer, Integer>> map, int maxValue, boolean asd){
+	if(switchShowB){
+		for(int i = 0; i < worldCountries.size(); i++)
+			for(String name : map.keySet())
+				if(worldCountries.get(i).name.equals(name)){
+					int aggregatedAttendance = 0;
+					for(int year : map.get(name).keySet())
+						aggregatedAttendance = map.get(name).get(year);
+					world.getChild(i).setFill(color(0, 0, 255, 255f/float(maxValue)*aggregatedAttendance));
+					world.getChild(i).setStroke(true);
+					world.getChild(i).setStrokeWeight(0.3f);
+					shape(world.getChild(i), 0, 2*PANEL_HEIGHT);
+				}
+		for(int i = 0; i < worldCountries.size(); i++)
+			for(String name : map.keySet())
+				if(worldCountries.get(i).name.equals(name))
+					if(world.getChild(i).contains(mouseX, mouseY-2*PANEL_HEIGHT)){
+						String output = name;
+						for(int year : map.get(name).keySet())
+							output = output.concat("\n" + year + ": " + String.format("%,d", map.get(name).get(year)));
+						textAlign(LEFT, BOTTOM);
+						text(output, mouseX, mouseY);
+					}
+    colourScale(width-60, height/2-50, 50, 200, maxValue);
 	}
 }
 
+void colourScale(int fromX, int fromY, int width, int height, int maxValue){
+  color maxColour = color(0, 0, 255, 255);
+  color minColour = color(255);
+
+  for (int i = fromY; i <= fromY+height; i++) {
+    float inter = map(i, fromY, fromY+height, 0, 1);
+    color c = lerpColor(maxColour, minColour, inter);
+    stroke(c);
+    line(fromX, i, fromX+width, i);
+  }
+  fill(0);
+  textAlign(RIGHT, CENTER);
+  textSize(15);
+  text(String.format("%,d", maxValue), fromX+width, fromY-10);
+  text("0", fromX+width, fromY+height+10);
+  textSize(12);
+  textAlign(LEFT);
+}
 
 void fourthPanelDraw(){
 	text("4444", 150, 150);
