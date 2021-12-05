@@ -555,7 +555,12 @@ void getWorldCountries(){
     		Country asd = new Country(tmpCountry);
     		loadAliases(asd);
     		worldCountries.add(asd);
-    	}
+    	} 
+    	else
+    		for(Country tCountry : worldCountries)
+    			if(tCountry.name.equals(tmpCountry))
+ 			   		for(Recording record : records)
+	    				tCountry.update(record);
 		}
   }
   //for(int i = 0; i < worldCountries.size(); i++)
@@ -745,17 +750,44 @@ void colorBasedOnPlacements(int year){
   		world.getChild(i).setFill(BRONZE);
   	else if(worldCountries.get(i).aliases.contains(currentCup.fourth))
   		world.getChild(i).setFill(IRON);
-  	else if(worldCountries.get(i).interestingFacts.containsKey(currentCup.year)){
-  		println(worldCountries.get(i).interestingFacts.keySet());
-    	world.getChild(i).setFill(NO_PLACEMENT);  		
-  	}
+  	else if(worldCountries.get(i).interestingFacts.containsKey(currentCup.year))
+    	world.getChild(i).setFill(NO_PLACEMENT);
   	else
     	world.getChild(i).setFill(DID_NOT_PARTICIPATE);
   	world.getChild(i).setStroke(true);
     world.getChild(i).setStrokeWeight(0.3f);
     shape(world.getChild(i), 0, 2*PANEL_HEIGHT);
 	}
-}
+	textSize(15);
+	text("Legends", 1100, 180);
+	strokeWeight(1);
+	stroke(0);
+	fill(GOLD);
+	rect(1100, 200, 30, 30);
+	fill(SILVER);
+	rect(1100, 230, 30, 30);
+	fill(BRONZE);
+	rect(1100, 260, 30, 30);
+	fill(IRON);
+	rect(1100, 290, 30, 30);
+	fill(NO_PLACEMENT);
+	rect(1100, 320, 30, 30);
+	fill(DID_NOT_PARTICIPATE);
+	rect(1100, 350, 30, 30);
+
+	fill(0);
+	text("Gold medalist", 1135, 205);
+	text("("+currentCup.winner+")", 1265, 205);
+	text("Silver medalist", 1135, 235);
+	text("("+currentCup.second+")", 1265, 235);
+	text("Bronze medalist", 1135, 265);
+	text("("+currentCup.third+")", 1265, 265);
+	text("Iron medalist", 1135, 295);
+	text("("+currentCup.fourth+")", 1265, 295);
+	text("Out of top4", 1135, 325);
+	text("Did not play", 1135, 355);
+
+	textSize(12);}
 
 void mousePressed() {
   // Check if the mouse has been clicked inside of a panel
