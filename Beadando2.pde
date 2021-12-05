@@ -806,7 +806,7 @@ void mouseMoved(){
 }
 void mouseDragged(){
   parallelCoordinatesView.onMouseDragged(pmouseX, pmouseY, mouseX, mouseY);
-  if(slider2.isVisible()){
+  if(slider2 != null && slider2.isVisible()){
   	slider2.setStickToTicks(false);
   }
 }
