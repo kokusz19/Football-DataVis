@@ -563,63 +563,62 @@ void getWorldCountries(){
 }
 void loadAliases(Country country){
 	switch (country.name) {
-		case "USA":
-			country.aliases.add("United States");
+		case "United States":
+			country.aliases.add("USA");
 			break;
-		case "Yugoslavia":
-			country.aliases.add("Slovenia");
-			country.aliases.add("Croatia");
-			country.aliases.add("Bosnia and Herczegovina");
-			country.aliases.add("Macedonia");
-			country.aliases.add("Montenegro");
-			country.aliases.add("Serbia");
-			country.aliases.add("Kosovo");
+		case "Slovenia":
+			country.aliases.add("Yugoslavia");
 			break;
-		case "England":
-			country.aliases.add("United Kingdom");
+		case "Croatia":
+			country.aliases.add("Yugoslavia");
 			break;
-		case "Scotland":
-			country.aliases.add("United Kingdom");
+		case "Bosnia and Herczegovina":
+			country.aliases.add("Yugoslavia");
 			break;
-		case "Germany FR":
-			country.aliases.add("Germany");
+		case "Macedonia":
+			country.aliases.add("Yugoslavia");
 			break;
-		case "Korea Republic":
-			country.aliases.add("South Korea");
+		case "Montenegro":
+			country.aliases.add("Yugoslavia");
+			country.aliases.add("Serbia and Montenegro");
 			break;
-		case "Soviet_Union":
-			country.aliases.add("Russia");
+		case "Serbia":
+			country.aliases.add("Yugoslavia");
+			country.aliases.add("Serbia and Montenegro");
 			break;
-		case "Wales":
-			country.aliases.add("United Kingdom");
+		case "Kosovo":
+			country.aliases.add("Yugoslavia");
 			break;
-		case "Northern Ireland":
-			country.aliases.add("Ireland");
+		case "United Kingdom":
+			country.aliases.add("England");
+			country.aliases.add("Scotland");
+			country.aliases.add("Wales");
 			break;
-		case "Korea DPR":
-			country.aliases.add("North Korea");
+		case "Germany":
+			country.aliases.add("Germany FR");
+			country.aliases.add("Germany DR");
 			break;
-		case "German DR":
-			country.aliases.add("Germany");
+		case "South Korea":
+			country.aliases.add("Korea Republic");
 			break;
-		case "Zaire":
-			country.aliases.add("Democratic Republic of Congo");
+		case "Russia":
+			country.aliases.add("Soviet Union");
 			break;
-		case "IR Iran":
-			country.aliases.add("Iran");
+		case "Ireland":
+			country.aliases.add("Northern Ireland");
+			country.aliases.add("Republic of Ireland");
+				break;
+		case "North Korea":
+			country.aliases.add("Korea DPR");
 			break;
-		case "Republic of Ireland":
-			country.aliases.add("Ireland");
+		case "Democratic Republic of Congo":
+			country.aliases.add("Zaire");
 			break;
-		case "China_PR":
-			country.aliases.add("China");
+		case "Iran":
+			country.aliases.add("IR Iran");
 			break;
-		case "Serbia_and_Montenegro":
-			country.aliases.add("Serbia");
-			country.aliases.add("Montenegro");
-			break;
-		case "Czech Republic":
-			country.aliases.add("Czechia");
+		case "China":
+			country.aliases.add("China PR");
 			break;
 	}
 }
@@ -710,7 +709,7 @@ void fourthPanelDraw(){
 		slider2 = new GSlider(this, 700, height, width/2-115, width+178, 20);
 		slider2.setRotation(-PI/2);
 		slider2.setLimits(float(worldCups.length-1), 0f);
-		slider2.setNbrTicks(worldCups.length-1);
+		slider2.setNbrTicks(worldCups.length);
 		slider2.setShowTicks(true);
 		slider2.setShowLimits(true);
 	}
@@ -738,7 +737,7 @@ void colorBasedOnPlacements(int year){
 			currentCup = wc;
 
 	for(int i = 0; i < worldCountries.size(); i++){
-  	if(worldCountries.get(i).aliases.contains(currentCup.winner))
+		if(worldCountries.get(i).aliases.contains(currentCup.winner))
   		world.getChild(i).setFill(GOLD);
   	else if(worldCountries.get(i).aliases.contains(currentCup.second))
   		world.getChild(i).setFill(SILVER);
@@ -746,8 +745,10 @@ void colorBasedOnPlacements(int year){
   		world.getChild(i).setFill(BRONZE);
   	else if(worldCountries.get(i).aliases.contains(currentCup.fourth))
   		world.getChild(i).setFill(IRON);
-  	else if(worldCountries.get(i).interestingFacts.containsKey(currentCup.year))
+  	else if(worldCountries.get(i).interestingFacts.containsKey(currentCup.year)){
+  		println(worldCountries.get(i).interestingFacts.keySet());
     	world.getChild(i).setFill(NO_PLACEMENT);  		
+  	}
   	else
     	world.getChild(i).setFill(DID_NOT_PARTICIPATE);
   	world.getChild(i).setStroke(true);
@@ -779,7 +780,7 @@ void mouseDragged(){
 }
 void mouseReleased(){
   parallelCoordinatesView.onMouseReleasedAt(mouseX, mouseY);
-  if(slider2.isVisible()){
+  if(slider2 != null && slider2.isVisible()){
   	slider2.setStickToTicks(true);
   }
 }
