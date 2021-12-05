@@ -6,6 +6,7 @@ public class Country extends CountryStatic{
 	public int won, draw, lost;
 	public int points;
 	public TreeMap<Integer, InterestingFacts> interestingFacts;
+	public List<String> aliases;
 
 	public Country(String tname){
 		id = count;
@@ -13,6 +14,8 @@ public class Country extends CountryStatic{
 		name = tname;
 		maxPlays = maxPlays+1;
 		interestingFacts = new TreeMap<Integer, InterestingFacts>();
+		aliases = new ArrayList<String>();
+		aliases.add(tname);
 	}
 
 	public void update(Recording recording){

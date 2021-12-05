@@ -32,6 +32,7 @@ GButton switchShow;
 boolean switchShowB;
 
 // Fourth panel
+GSlider slider2;
 
 void setup(){
   size(1600, 800);
@@ -41,8 +42,8 @@ void setup(){
   panel.add(new Button(0, 0, 100, PANEL_HEIGHT, "Overall"));
   panel.add(new Button(100, 0, 150, PANEL_HEIGHT, "Play X Score"));
   panel.add(new Button(250, 0, 150, PANEL_HEIGHT, "World map"));
-  panel.add(new Button(400, 0, 100, PANEL_HEIGHT));
-  panel.add(new Button(500, 0, width, PANEL_HEIGHT));
+  panel.add(new Button(400, 0, 150, PANEL_HEIGHT, "Placements"));
+  panel.add(new Button(550, 0, width, PANEL_HEIGHT));
 
   // Loading the 2nd csv and printing it's values if needed
   table2 = loadTable("world_cups.csv", "header");
@@ -66,6 +67,7 @@ void setup(){
   firstPanelSetup();
   secondPanelSetup();
   thirdPanelSetup();
+  fourthPanelSetup();
 }
 
 void draw(){
@@ -84,6 +86,9 @@ void draw(){
 			if(switchShow != null){
 				switchShow.setVisible(false);
 			}
+			if(slider2 != null){
+				slider2.setVisible(false);
+			}
 			parallelCoordinatesView.draw();
 			break;
 		}
@@ -97,6 +102,9 @@ void draw(){
 			}
 			if(switchShow != null){
 				switchShow.setVisible(false);
+			}
+			if(slider2 != null){
+				slider2.setVisible(false);
 			}
 			secondPanelDraw();
 			break;
@@ -112,6 +120,9 @@ void draw(){
 			if(switchShow != null){
 				switchShow.setVisible(true);
 			}
+			if(slider2 != null){
+				slider2.setVisible(false);
+			}
 			thirdPanelDraw();
 			break;
 		}
@@ -125,6 +136,9 @@ void draw(){
 			}
 			if(switchShow != null){
 				switchShow.setVisible(false);
+			}
+			if(slider2 != null){
+				slider2.setVisible(true);
 			}
 			fourthPanelDraw();
 			break;
@@ -539,13 +553,75 @@ void getWorldCountries(){
     			present = true;
     	if(!present){
     		Country asd = new Country(tmpCountry);
-    		//println(asd.id + " " + asd.name);
+    		loadAliases(asd);
     		worldCountries.add(asd);
     	}
 		}
   }
   //for(int i = 0; i < worldCountries.size(); i++)
   //	println(i + " " + worldCountries.get(i).name);
+}
+void loadAliases(Country country){
+	switch (country.name) {
+		case "USA":
+			country.aliases.add("United States");
+			break;
+		case "Yugoslavia":
+			country.aliases.add("Slovenia");
+			country.aliases.add("Croatia");
+			country.aliases.add("Bosnia and Herczegovina");
+			country.aliases.add("Macedonia");
+			country.aliases.add("Montenegro");
+			country.aliases.add("Serbia");
+			country.aliases.add("Kosovo");
+			break;
+		case "England":
+			country.aliases.add("United Kingdom");
+			break;
+		case "Scotland":
+			country.aliases.add("United Kingdom");
+			break;
+		case "Germany FR":
+			country.aliases.add("Germany");
+			break;
+		case "Korea Republic":
+			country.aliases.add("South Korea");
+			break;
+		case "Soviet_Union":
+			country.aliases.add("Russia");
+			break;
+		case "Wales":
+			country.aliases.add("United Kingdom");
+			break;
+		case "Northern Ireland":
+			country.aliases.add("Ireland");
+			break;
+		case "Korea DPR":
+			country.aliases.add("North Korea");
+			break;
+		case "German DR":
+			country.aliases.add("Germany");
+			break;
+		case "Zaire":
+			country.aliases.add("Democratic Republic of Congo");
+			break;
+		case "IR Iran":
+			country.aliases.add("Iran");
+			break;
+		case "Republic of Ireland":
+			country.aliases.add("Ireland");
+			break;
+		case "China_PR":
+			country.aliases.add("China");
+			break;
+		case "Serbia_and_Montenegro":
+			country.aliases.add("Serbia");
+			country.aliases.add("Montenegro");
+			break;
+		case "Czech Republic":
+			country.aliases.add("Czechia");
+			break;
+	}
 }
 void basicColourCountries(){
 	color startColor = color(255);
@@ -577,7 +653,6 @@ void advancedColourCountries(TreeMap<String, Integer> map, int maxValue){
     colourScale(width-60, height/2-50, 50, 200, maxValue);
 	}	
 }
-
 void advancedColourCountries(TreeMap<String, TreeMap<Integer, Integer>> map, int maxValue, boolean asd){
 	if(switchShowB){
 		for(int i = 0; i < worldCountries.size(); i++)
@@ -604,7 +679,6 @@ void advancedColourCountries(TreeMap<String, TreeMap<Integer, Integer>> map, int
     colourScale(width-60, height/2-50, 50, 200, maxValue);
 	}
 }
-
 void colourScale(int fromX, int fromY, int width, int height, int maxValue){
   color maxColour = color(0, 0, 255, 255);
   color minColour = color(255);
@@ -624,8 +698,62 @@ void colourScale(int fromX, int fromY, int width, int height, int maxValue){
   textAlign(LEFT);
 }
 
+void fourthPanelSetup(){
+	thirdPanelSetup();
+}
 void fourthPanelDraw(){
-	text("4444", 150, 150);
+	getWorldCountries();
+	basicColourCountries();
+
+	int sliderMin = worldCups.length-1, sliderMax = 0;
+	if(slider2 == null){
+		slider2 = new GSlider(this, 700, height, width/2-115, width+178, 20);
+		slider2.setRotation(-PI/2);
+		slider2.setLimits(float(worldCups.length-1), 0f);
+		slider2.setNbrTicks(worldCups.length-1);
+		slider2.setShowTicks(true);
+		slider2.setShowLimits(true);
+	}
+	slider2.draw();
+	int currentYear = worldCups[slider2.getValueI()].year;
+	textSize(20);
+	textAlign(LEFT, TOP);
+	text(currentYear, width/4, PANEL_HEIGHT+10);
+	text(currentYear, width/4+1, PANEL_HEIGHT+10);
+	textSize(12);
+
+	colorBasedOnPlacements(currentYear);
+}
+void colorBasedOnPlacements(int year){
+	color DID_NOT_PARTICIPATE = color(255);
+	color NO_PLACEMENT = color(0, 0, 230, 25);
+	color IRON = color(105, 107, 94);
+	color BRONZE = color(205, 127, 50);
+	color SILVER = color(196, 202, 206);
+	color GOLD = color(212, 175, 55);
+
+	WorldCup currentCup = null;
+	for(WorldCup wc : worldCups)
+		if(wc.year == year)
+			currentCup = wc;
+
+	for(int i = 0; i < worldCountries.size(); i++){
+  	if(worldCountries.get(i).aliases.contains(currentCup.winner))
+  		world.getChild(i).setFill(GOLD);
+  	else if(worldCountries.get(i).aliases.contains(currentCup.second))
+  		world.getChild(i).setFill(SILVER);
+  	else if(worldCountries.get(i).aliases.contains(currentCup.third))
+  		world.getChild(i).setFill(BRONZE);
+  	else if(worldCountries.get(i).aliases.contains(currentCup.fourth))
+  		world.getChild(i).setFill(IRON);
+  	else if(worldCountries.get(i).interestingFacts.containsKey(currentCup.year))
+    	world.getChild(i).setFill(NO_PLACEMENT);  		
+  	else
+    	world.getChild(i).setFill(DID_NOT_PARTICIPATE);
+  	world.getChild(i).setStroke(true);
+    world.getChild(i).setStrokeWeight(0.3f);
+    shape(world.getChild(i), 0, 2*PANEL_HEIGHT);
+	}
 }
 
 void mousePressed() {
@@ -645,9 +773,15 @@ void mouseMoved(){
 }
 void mouseDragged(){
   parallelCoordinatesView.onMouseDragged(pmouseX, pmouseY, mouseX, mouseY);
+  if(slider2.isVisible()){
+  	slider2.setStickToTicks(false);
+  }
 }
 void mouseReleased(){
   parallelCoordinatesView.onMouseReleasedAt(mouseX, mouseY);
+  if(slider2.isVisible()){
+  	slider2.setStickToTicks(true);
+  }
 }
 void createUpperPanel(){
   // Creating upper panel
